@@ -29,19 +29,24 @@ class sweep
   {
     if((millis() -lastupdate) > updateinterval)
     {
-     lastupdate=millis();
+    lastupdate=millis();
     pos +=increment;
-   servo.write(pos);
-   Serial.println(pos);
-   if ((pos >=60) || (pos<=0))
+    servo.write(pos);
+    }
+    
+    if ((millis()-lastupdate) > 999)
+    {
+    Serial.println(pos);
+    }
+    
+    if ((pos >=60) || (pos<=0))
    {
     increment=-increment; 
    }
     }
-  }
-    };
-sweep servo1(15);
-sweep servo2(5);
+  };
+sweep servo1(7);
+sweep servo2(10);
 
 void setup()
 {
