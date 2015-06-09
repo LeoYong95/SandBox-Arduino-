@@ -10,23 +10,36 @@ int sensor_Pin;
  unsigned long previousTime;
  unsigned long currentTime;
 //----------Line to print
- String line ="LEO YONG IS AWESOME";
+ String line ;
  
 
 public:
 
-LCD()
+LCD(int sense)
 {
 LiquidCrystal lcd(12,11,5,4,3,2);
 lcd.begin(16,2);
 previousTime = 0;
 lcd.print(line);
 lcd.scrollDisplayLeft();
+ sensor_Pin = sense;
 };
 
 void update()
 {
-   
+   if( analogRead(sensor_Pin) <= 341)
+  {
+    line ="IT IS A GLOOMY DAY";
+    
+  }else if(analogRead(sensor_Pin) >= 341)
+  {
+    line ="IT IS A SUNNY DAY";
+    
+  }else{
+    line ="LEO YONG IS AWESOME";
+  }
+  
+  
 }
 
 void time()
@@ -38,13 +51,15 @@ void time()
   }
 }
 
-
-
 };
+
+LCD screen1(A0);
+
 void setup() {
  
 }
 
 void loop() {
+  
 }
 
