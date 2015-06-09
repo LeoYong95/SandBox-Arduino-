@@ -1,65 +1,74 @@
 
 #include <LiquidCrystal.h>
-
-
+ 
+ LiquidCrystal lcd(12,11,5,4,3,2);
+ 
 class LCD 
 {
-//---------sensor pin
-int sensor_Pin;
+  public:
 //---------variables
+
  unsigned long previousTime;
  unsigned long currentTime;
+ int sensorvalue;
+
 //----------Line to print
- String line ;
+String line;
  
-
-public:
-
-LCD(int sense)
+LCD()
 {
-LiquidCrystal lcd(12,11,5,4,3,2);
-lcd.begin(16,2);
-previousTime = 0;
-lcd.print(line);
-lcd.scrollDisplayLeft();
- sensor_Pin = sense;
+  previousTime = 0;
+  
 };
 
 void update()
 {
-   if( analogRead(sensor_Pin) <= 341)
+  currentTime = millis();
+  if (currentTime - previousTime >=1000)
   {
-    line ="IT IS A GLOOMY DAY";
+    lcd.clear();
+    previousTime = currentTime;
+    sensorvalue = analogRead(A0);
+    Serial.println(sensorvalue);
     
-  }else if(analogRead(sensor_Pin) >= 341)
+   if( sensorvalue <100)
   {
-    line ="IT IS A SUNNY DAY";
+    lcd.print("DARK DAY");
+    
+    
+  }else if(sensorvalue > 300)
+  {
+    lcd.print("SUNNY DAY");
     
   }else{
-    line ="LEO YONG IS AWESOME";
+   lcd.print("LEO YONG AWESOME");
+   
   }
-  
-  
-}
 
-void time()
-{
-  currentTime = millis();
-  if (currentTime - previousTime >=500)
-  {
-    LCD::update();
   }
+
 }
 
 };
 
-LCD screen1(A0);
+LCD screen1;
 
 void setup() {
- 
+  lcd.begin(16,2);
+  lcd.print("starting");
+   Serial.begin(9600);
+     
+
+OCR0A = 0xAF;
+TIMSK0 |= _BV(OCIE0A);
 }
 
-void loop() {
+SIGNAL(TIMER0_COMPA_vect)
+{
+  screen1.update();  
+}
   
+  
+void loop() {
 }
 
