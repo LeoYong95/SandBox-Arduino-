@@ -1,41 +1,90 @@
-
+/*
+ - This code display the fucntionality of the LiquidCrystal Librarry of Arduino.
+ - Here the code allow the LCD screen to be interupted by an AIpin.
+ - A Timer built in the micro processor is also utilised to call the update function.
+*/
 #include <LiquidCrystal.h>
 
+ 
+//list down the variables
+LiquidCrystal lcd(12,11,5,4,3,2);
+ 
+//create a LCD class
+class LCD 
+{
+  public:
+//---------variables
+unsigned long previousTime;
+unsigned long currentTime;
+int sensorvalue;
 
-LiquidCrystal LCD(12, 11, 5, 4, 3, 2);
-
-byte Heart[8] = {
-  B00000,
-  B00000,
-  B00000,
-  B11011,
-  B11111,
-  B01110,
-  B00100,
+//----------Line to print
+String line;
+ 
+LCD()
+{
+  previousTime = 0;
+  
 };
 
-
-void LCD_setup()
+//----------update the lcd screen
+void update()
 {
-//stearting the LCD screen.(16 collumn, 2 row)
-LCD.begin(16,2);
-char line[]= "LEO YONG IS AWESOME";
-//for loop to move text on screen
-LCD.print(line);
+  currentTime = millis();
+  
+  //--------only interupt for every second
+  if (currentTime - previousTime >=1000)
+  {
+    lcd.clear();
+    
+    previousTime = currentTime;
+    
+    sensorvalue = analogRead(A0);
+    
+    Serial.println(sensorvalue);
+    
+   if( sensorvalue <100)
+  {
+    lcd.print("DARK DAY");
+    
+    
+  }else if(sensorvalue > 300)
+  {
+    lcd.print("SUNNY DAY");
+    
+  }else{
+   lcd.print("LEO YONG AWESOME");
+   
+  }
+
+  }
+
 }
 
-void LCD_Display()
-{
- //scroll text from right to left
- LCD.scrollDisplayLeft();
- delay(500);
-}
+};
+//-----------one lcd variables
+LCD screen1;
 
 void setup() {
-  LCD_setup();
+//----------initiate LCD screen
+
+  lcd.begin(16,2);
+  lcd.print("starting");
+
+   Serial.begin(9600);
+     
+//----------Timer setup.
+OCR0A = 0xAF;
+TIMSK0 |= _BV(OCIE0A);
 }
 
+//---------signal generated for every milisecond
+SIGNAL(TIMER0_COMPA_vect)
+{
+  screen1.update();  
+}
+  
+//empty loop.  
 void loop() {
-  LCD_Display();
 }
 
